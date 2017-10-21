@@ -1,4 +1,4 @@
-import * as receiver from './receiver.js';
+import * as receiver from './receiver';
 import * as explorer from './explorer';
 
 receiver.init();

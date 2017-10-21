@@ -2,8 +2,8 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    app: './src/app.js',
-    control: './src/control.js'
+    space: './src/space/index.js',
+    earth: './src/earth/index.js'
   },
   output: {
     path: path.resolve(__dirname, 'public/bundle'),

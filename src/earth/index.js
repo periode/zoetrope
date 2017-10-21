@@ -1,5 +1,5 @@
-import * as sender from './sender.js'
-import * as panel from './panel.js'
+import * as sender from './sender'
+import * as panel from './panel'
 
 sender.connect();
 panel.setup();
