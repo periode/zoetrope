@@ -1,10 +1,13 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/app.js',
+  entry: {
+    app: './src/app.js',
+    control: './src/control.js'
+  },
   output: {
-    path: path.resolve(__dirname, 'public'),
-    filename: 'bundle.js'
+    path: path.resolve(__dirname, 'public/bundle'),
+    filename: '[name].js'
   },
   module: {
     loaders: [

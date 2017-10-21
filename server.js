@@ -12,3 +12,12 @@ server.listen(PORT, function(){
 });
 
 const io = require('socket.io')(server);
+
+io.on('connect', function(socket){
+	console.log('new user:',socket.id);
+
+	socket.on('launch', function(){
+    console.log('receiving launch');
+		socket.emit('launch', true);
+	});
+});
