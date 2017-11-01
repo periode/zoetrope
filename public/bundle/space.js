@@ -6810,8 +6810,9 @@ var fullscreen = function fullscreen() {
 
 
 var _exports = module.exports = {};
-
-var SOCKET_SERVER = "10.225.32.166:2046";
+//adhoc: 169.254.110.10
+//wifi: 169.225.32.166
+var SOCKET_SERVER = "169.254.110.10:2046";
 var io = __webpack_require__(23);
 
 var explorer = __webpack_require__(48);

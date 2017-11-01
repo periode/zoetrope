@@ -1,6 +1,7 @@
 let exports = module.exports = {};
-
-const SOCKET_SERVER = "10.225.32.166:2046";
+//adhoc: 169.254.110.10
+//wifi: 169.225.32.166
+const SOCKET_SERVER = "169.254.110.10:2046";
 const io = require('socket.io-client');
 
 let explorer = require('./explorer.js')
