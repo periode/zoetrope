@@ -8,3 +8,5 @@ let start = function(){
   console.log('emitting launch');
   receiver.socket.emit('launch');
 }
+
+window.fullscreen = explorer.fullscreen
