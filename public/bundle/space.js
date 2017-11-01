@@ -6697,6 +6697,7 @@ _exports.init = function () {
 
   window.addEventListener('click', fullscreen);
   window.addEventListener('keypress', fullscreen);
+  window.addEventListener('resize', onWindowResize, false);
 };
 
 _exports.launch = function () {
@@ -6722,6 +6723,7 @@ var setup = function setup() {
   porthole = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1600);
   porthole.position.z = 5;
 
+  onWindowResize();
   setupLights();
 
   var geom = new THREE.SphereGeometry(3, 3, 3);
@@ -6741,6 +6743,12 @@ var render = function render() {
   requestAnimationFrame(render);
 
   renderer.render(space, porthole);
+};
+
+var onWindowResize = function onWindowResize() {
+  porthole.aspect = window.innerWidth / window.innerHeight;
+  porthole.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 };
 
 var fullscreen = function fullscreen() {

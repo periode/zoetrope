@@ -6,6 +6,7 @@ exports.init = function(){
 
   window.addEventListener('click', fullscreen)
   window.addEventListener('keypress', fullscreen)
+  window.addEventListener('resize', onWindowResize, false)
 }
 
 exports.launch = function(){
@@ -29,6 +30,7 @@ let setup = function  (){
   porthole = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1600)
   porthole.position.z = 5
 
+  onWindowResize()
   setupLights()
 
   let geom = new THREE.SphereGeometry(3, 3, 3)
@@ -49,6 +51,12 @@ let render = function(){
   requestAnimationFrame(render);
 
   renderer.render(space, porthole);
+}
+
+let onWindowResize = function(){
+	porthole.aspect = window.innerWidth/window.innerHeight;
+	porthole.updateProjectionMatrix();
+	renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 let fullscreen = function(){
