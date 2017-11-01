@@ -6696,7 +6696,7 @@ _exports.init = function () {
   console.log('EXPLORER: systems init');
 
   window.addEventListener('click', fullscreen);
-  window.addEventListener('keypress', fullscreen);
+  window.addEventListener('keypress', onKeypress);
   window.addEventListener('resize', onWindowResize, false);
 };
 
@@ -6709,6 +6709,8 @@ var space = void 0,
     porthole = void 0,
     renderer = void 0,
     ambient = void 0;
+var porthole_distance = 5;
+var origin = new THREE.Vector3(0, 0, 0);
 var comet = void 0;
 
 var setup = function setup() {
@@ -6721,7 +6723,7 @@ var setup = function setup() {
   document.body.appendChild(renderer.domElement);
 
   porthole = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1600);
-  porthole.position.z = 5;
+  porthole.position.z = porthole_distance;
 
   onWindowResize();
   setupLights();
@@ -6729,6 +6731,10 @@ var setup = function setup() {
   var geom = new THREE.SphereGeometry(3, 3, 3);
   var mat = new THREE.MeshBasicMaterial({ color: 0xffffff });
   comet = new THREE.Mesh(geom, mat);
+  comet.position.x = origin.x;
+  comet.position.y = origin.y;
+  comet.position.z = origin.z;
+  space.add(comet);
 
   console.log(comet);
   render();
@@ -6749,6 +6755,31 @@ var onWindowResize = function onWindowResize() {
   porthole.aspect = window.innerWidth / window.innerHeight;
   porthole.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+};
+
+var onKeypress = function onKeypress(e) {
+  switch (e.key) {
+    case " ":
+      fullscreen();
+      break;
+    default:
+      setPortholePosition(parseInt(e.key, 12));
+      break;
+  }
+};
+
+var setPortholePosition = function setPortholePosition(index) {
+  if (index > 12) throw "invalid porthole position";
+  var coeff = map(index, 0, 12, 0, Math.PI * 2);
+
+  porthole.position.x = Math.cos(coeff) * porthole_distance;
+  porthole.position.z = Math.sin(coeff) * porthole_distance;
+
+  porthole.lookAt(origin);
+};
+
+var map = function map(val, old_min, old_max, new_min, new_max) {
+  return new_min + (new_max - new_min) * (val - old_min) / (old_max - old_min);
 };
 
 var fullscreen = function fullscreen() {
