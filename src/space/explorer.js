@@ -9,20 +9,22 @@ exports.init = function(){
   window.addEventListener('resize', onWindowResize, false)
 }
 
-exports.launch = function(){
-  console.log('EXPLORER: launched!')
-}
-
 
 const THREE = require('three')
 let space, porthole, renderer, ambient
-let porthole_distance = 5
+let porthole_distance = 10
 let origin = new THREE.Vector3(0, 0, 0)
 let comet
+let clock
+
+//---------
+let orbit_radius = 0
 
 let setup = function  (){
   space = new THREE.Scene()
   space.background = new THREE.Color('black')
+
+  clock = new THREE.Clock(false)
 
   renderer = new THREE.WebGLRenderer()
   renderer.setPixelRatio(window.devicePixelRatio)
@@ -47,12 +49,29 @@ let setup = function  (){
   render()
 }
 
-let setupLights = function(){
+let setupLights = () => {
   var ambient = new THREE.AmbientLight();
   space.add(ambient);
 }
 
+
+exports.launch = () =>{
+  console.log('EXPLORER: launched!')
+
+  setTimeout(function(){
+    clock.start()
+    orbit_radius = 5
+  }, 1000)
+
+}
+
+let animate = () => {
+  comet.position.x = Math.cos(clock.getElapsedTime()*0.1)*orbit_radius
+  comet.position.z = Math.sin(clock.getElapsedTime()*0.1)*orbit_radius
+}
+
 let render = function(){
+  animate()
   requestAnimationFrame(render);
 
   renderer.render(space, porthole);
