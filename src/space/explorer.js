@@ -11,10 +11,13 @@ exports.init = function(){
 
 
 const THREE = require('three')
+const OBJLoader = require('three-obj-loader');
+OBJLoader(THREE);
+
 let space, porthole, renderer, ambient
-let porthole_distance = 10
+let porthole_distance = 40
 let origin = new THREE.Vector3(0, 0, 0)
-let comet
+let comet, logo
 let clock
 
 //---------
@@ -38,36 +41,69 @@ let setup = function  (){
   setupLights()
 
   let geom = new THREE.SphereGeometry(3, 3, 3)
-  let mat = new THREE.MeshBasicMaterial({color: 0xffffff})
+  let mat = new THREE.MeshBasicMaterial({color: 0xff0000})
   comet = new THREE.Mesh(geom, mat)
   comet.position.x = origin.x
   comet.position.y = origin.y
   comet.position.z = origin.z
-  space.add(comet)
+  // space.add(comet)
+
+  loadObject()
 
   console.log(comet)
   render()
 }
 
 let setupLights = () => {
-  var ambient = new THREE.AmbientLight();
-  space.add(ambient);
+  var ambient = new THREE.AmbientLight(0xcccccc, 0.2)
+  space.add(ambient)
+
+  var point = new THREE.PointLight(0xffffff, 0.8)
+  point.position.z = porthole_distance
+  point.position.x = porthole_distance*0.5
+  porthole.add(point)
+  space.add(point)
+}
+
+let loadObject = () => {
+  let loader = new THREE.OBJLoader()
+
+  loader.load('bundle/assets/obj/OSLogoDJ-straight-straight.obj', (object) => {
+    console.log(object);
+    for(var i = 0; i < object.children; i++){
+      object.children[i].material = new THREE.MeshPhongMaterial({flatShading: true})
+    }
+    logo = object
+
+    logo.position.x = origin.x
+    logo.position.y = origin.y
+    logo.position.z = origin.z
+    logo.scale.x = 0.2
+    logo.scale.y = 0.2
+    logo.scale.z = 0.2
+    logo.rotation.y = Math.PI/2
+
+    space.add(logo)
+  })
 }
 
 
 exports.launch = () =>{
   console.log('EXPLORER: launched!')
-
-  setTimeout(function(){
-    clock.start()
-    orbit_radius = 5
-  }, 1000)
-
+  clock.start()
+  orbit_radius = porthole_distance*0.8
 }
 
 let animate = () => {
-  comet.position.x = Math.cos(clock.getElapsedTime()*0.1)*orbit_radius
-  comet.position.z = Math.sin(clock.getElapsedTime()*0.1)*orbit_radius
+  if(logo != undefined){
+    logo.position.x = Math.cos(clock.getElapsedTime()*0.1)*orbit_radius
+    logo.position.z = Math.sin(clock.getElapsedTime()*0.1)*orbit_radius
+    // for(var i = 0; i < logo.children.length; i++){
+      logo.lookAt(origin)
+    // }
+    // logo.rotation.x = Math.PI/2
+  }
+
 }
 
 let render = function(){

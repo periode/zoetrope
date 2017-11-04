@@ -2,9 +2,9 @@
   "name": "zoetrope",
   "version": "1.0.0",
   "description": "networked graphics for twelve screens",
-  "repository":{
-	  "type": "git",
-	  "url":"https://github.com/pierredepaz/zoetrope.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pierredepaz/zoetrope.git"
   },
   "main": "app.js",
   "scripts": {
@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "express": "^4.16.2",
-    "socket.io": "^2.0.3"
+    "socket.io": "^2.0.3",
+    "three-obj-loader": "^1.1.3"
   }
 }
