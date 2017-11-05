@@ -1,6 +1,8 @@
 let exports = module.exports = {};
 
 const SOCKET_SERVER = "localhost:2046";
+// const SOCKET_SERVER = "169.254.110.10:2046";
+
 const io = require('socket.io-client');
 let socket
 

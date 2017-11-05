@@ -1,6 +1,5 @@
 precision mediump float;
 uniform float uTime;
-uniform vec3  uCursor;
 varying vec3  vPosition;
 
 // COMPUTE THE Z FOR A SPHERE OF RADIUS r.
@@ -14,36 +13,9 @@ float computeZ(vec2 xy, float r) {
 void main() {
    float x = vPosition.x;
    float y = vPosition.y;
-   float z = computeZ(vPosition.xy, 1.0);
+   float s = 0.;
 
-   // BACKGROUND SHADE IS JUST BLACK (ZERO).
-   float s = 0.5;
-   if(mod(x, 2.0) < 1.0 && mod(y, 2.0) < 1.0){
-    s = 1.0;
-   }else{
-      s = 0.0;
-   }
+   s = (mod(x, 2.0) * 0.1 + mod(y, 2.0+abs(vPosition.y)) * 0.15 + cos(mod(uTime, 10.0+abs(vPosition.z))) + sin(mod(uTime, 9.0))) > 0. ? 1. : 0.;
 
-   //s = mod(x, 2.0) * 0.1 + mod(y, 2.0) * 0.15 + cos(mod(uTime, 10.0)) + sin(mod(uTime, 9.0));
-   s = z;
-
-
-   // IF WE ARE IN THE SPHERE, THEN SHADE IT.
-
-   if (z > 0.) {
-
-      // START WITH DARK SHADE.
-
-      s = 0.5;
-
-      // ADD CRAZY ANIMATED "WOODGRAIN" TEXTURE.
-
-      s *= 0.8 + (0.2 * tan(uTime)) - sin(x*uTime) - sin(y*uTime);
-   }else{
-      s *= 0.8 + (0.2 * tan(uTime)) - cos(y*uTime) - sin(x*uTime);
-   }
-
-   // MULTIPY SHADE BY "WOOD" COLOR.
-
-   gl_FragColor = vec4(s * vec3(0.9, 0.9, 0.9), 1.);
+   gl_FragColor = vec4(vec3(1.)*s, 1.);
 }

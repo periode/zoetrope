@@ -26,7 +26,6 @@ exports.init = () =>{
   })
 
   socket.on('set', (data) => {
-    console.log('RECEIVER: received new '+data.group+' command...');
     if(data.group == 'rotation')
       explorer.setRotation(data.axis, data.value)
     else if(data.group == 'orbit')

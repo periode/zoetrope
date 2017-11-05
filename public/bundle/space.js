@@ -6669,6 +6669,30 @@ var _noise3 = __webpack_require__(48);
 
 var _noise4 = _interopRequireDefault(_noise3);
 
+var _stripes = __webpack_require__(54);
+
+var _stripes2 = _interopRequireDefault(_stripes);
+
+var _stripes3 = __webpack_require__(55);
+
+var _stripes4 = _interopRequireDefault(_stripes3);
+
+var _basic = __webpack_require__(56);
+
+var _basic2 = _interopRequireDefault(_basic);
+
+var _basic3 = __webpack_require__(57);
+
+var _basic4 = _interopRequireDefault(_basic3);
+
+var _perlin = __webpack_require__(58);
+
+var _perlin2 = _interopRequireDefault(_perlin);
+
+var _perlin3 = __webpack_require__(59);
+
+var _perlin4 = _interopRequireDefault(_perlin3);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -6684,36 +6708,88 @@ _exports.init = function () {
   window.addEventListener('resize', onWindowResize, false);
 };
 
+var radius = void 0;
+var launched = false;
 _exports.launch = function () {
   console.log('EXPLORER: launched!');
+  launched = true;
   clock.start();
 };
 
 _exports.introduce = function (_actor) {
-  console.log('introducing', _actor);
   //make current actor go down (using tweening)
   //once past a certain threshold, swap the actor
   //put it back up
   //make it go down to the middle
+
+
+  for (var i = 0; i < meshes.length; i++) {
+    meshes[i].visible = false;
+  }
+
+  if (_actor == 'logo') {
+    // removeAllObjects()
+    // actor.add(logo)
+    logo.visible = !logo.visible;
+    if (logo.visible) actor = logo;
+  }
+
+  if (_actor == 'cube') {
+    cube.visible = !cube.visible;
+    if (cube.visible) actor = cube;
+  }
+
+  if (_actor == 'sphere') {
+    sphere.visible = !sphere.visible;
+    if (sphere.visible) actor = sphere;
+  }
+
+  if (_actor == 'torus') {
+    torus.visible = !torus.visible;
+    if (torus.visible) actor = torus;
+  }
+
+  if (_actor == 'isocahedron') {
+    ico.visible = !ico.visible;
+    if (ico.visible) actor = ico;
+  }
+
+  if (_actor == 'mult_cube') {
+    removeAllObjects();
+    actor.add(mult_cube);
+  }
+
+  if (_actor == 'mult_sphere') {
+    removeAllObjects();
+    actor.add(mult_sphere);
+  }
+
+  if (_actor == 'mult_ico') {
+    removeAllObjects();
+    actor.add(mult_ico);
+  }
+
+  if (_actor == 'mult_torus') {
+    removeAllObjects();
+    actor.add(mult_torus);
+  }
 };
 
 _exports.setRotation = function (_axis, _value) {
-  console.log('setting rotation:', _axis, _value);
-  if (_axis == 'x') state.rotation.x = _value;else if (_axis == 'y') state.rotation.y = _value;else if (_axis == 'z') state.rotation.z = _value;else console.log('setRotation: unexpected axis', _axis);
+  console.log(_axis);
+  if (_axis == 'x') state.rotation.x += _value * 0.001;else if (_axis == 'y') state.rotation.y += _value * 0.001;else if (_axis == 'z') state.rotation.z += _value * 0.001;else console.log('setRotation: unexpected axis', _axis);
+  console.log(state.rotation);
 };
 
 _exports.setOrbit = function (_axis, _value) {
-  console.log('setting orbit:', _axis, _value);
-  if (_axis == 'radius') state.radius = _value;else if (_axis == 'offset') state.offset = _value;else console.log('setOrbit: unexpected axis', _axis);
+  if (_axis == 'radius') state.radius += _value * 1.5;else if (_axis == 'offset') state.offset += _value * 1.5;else console.log('setOrbit: unexpected axis', _axis);
 };
 
 _exports.setSpeed = function (_axis, _value) {
-  console.log('setting speed', _axis, _value);
-  if (_axis == 'x') state.speed.x = _value;else if (_axis == 'y') state.speed.y = _value;else console.log('setSpeed: unexpected axis', _axis);
+  if (_axis == 'x') state.speed.x += _value * .25;else if (_axis == 'y') state.speed.y += _value * .25;else console.log('setSpeed: unexpected axis', _axis);
 };
 
 _exports.shade = function (_shader) {
-  console.log('shading', _shader);
   if (_shader == 'default') actor.material = 'default';else if (_shader == 'noise') actor.material = 'noise';else if (_shader == 'stripes') actor.material = 'stripes';
 };
 
@@ -6727,13 +6803,20 @@ var space = void 0,
     ambient = void 0;
 var porthole_distance = 40;
 var origin = new THREE.Vector3(0, 0, 0);
-var comet = void 0,
-    logo = void 0;
 var clock = void 0;
 
 //---------
-var actor = void 0;
-var orbit_radius = 0;
+var actor = void 0,
+    logo = void 0;
+var sphere = void 0,
+    cube = void 0,
+    torus = void 0,
+    ico = void 0,
+    mult_sphere = void 0,
+    mult_cube = void 0,
+    mult_torus = void 0,
+    mult_ico = void 0;
+var meshes = [];
 var state = (_state = {
   'speed': 0,
   'rotation': new THREE.Vector3(0, 0, 0)
@@ -6741,7 +6824,7 @@ var state = (_state = {
 
 var setup = function setup() {
   space = new THREE.Scene();
-  space.background = new THREE.Color('black');
+  space.background = new THREE.Color('white');
 
   clock = new THREE.Clock(false);
 
@@ -6755,34 +6838,126 @@ var setup = function setup() {
 
   onWindowResize();
   setupLights();
+  actor = new THREE.Group();
 
-  var geom = new THREE.SphereGeometry(3, 3, 3);
-  var mat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-  comet = new THREE.Mesh(geom, mat);
-  comet.position.x = origin.x;
-  comet.position.y = origin.y;
-  comet.position.z = origin.z;
-  space.add(comet);
+  loadObject();
+  initSphere();
+  initCube();
+  initTorus();
+  initIso();
 
-  loadShaders();
-  // loadObject()
+  // initMultSphere()
+  // initMultCube()
+  // initMultTorus()
+  // initMultIso()
 
-  console.log(comet);
+  space.add(actor);
+
   render();
 };
 
-var frag_noise = void 0,
-    vert_noise = void 0,
-    mat_noise = void 0;
-var frag_perlin = void 0,
-    vert_perlin = void 0,
-    mat_perlin = void 0;
-var frag_stripes = void 0,
-    vert_stripes = void 0,
-    mat_stripes = void 0;
-var frag_background = void 0,
-    vert_background = void 0,
-    mat_background = void 0;
+var removeAllObjects = function removeAllObjects() {
+  for (var i = 0; i < actor.children.length; i++) {
+    actor.remove(actor.children[i]);
+  }
+};
+
+var initSphere = function initSphere() {
+  var geom = new THREE.SphereGeometry(10, 10, 10);
+  var mat = mat_noise;
+  sphere = new THREE.Mesh(geom, mat);
+  sphere.position.x = origin.x;
+  sphere.position.y = origin.y;
+  sphere.position.z = origin.z;
+  sphere.visible = false;
+  meshes.push(sphere);
+  space.add(sphere);
+};
+
+var initCube = function initCube() {
+  var geom = new THREE.BoxGeometry(15, 15, 15);
+  var mat = mat_stripes;
+  cube = new THREE.Mesh(geom, mat);
+  cube.position.x = origin.x;
+  cube.position.y = origin.y;
+  cube.position.z = origin.z;
+  cube.scale.x = 3;
+  cube.visible = false;
+  meshes.push(cube);
+  space.add(cube);
+};
+
+var initTorus = function initTorus() {
+  var geom = new THREE.TorusGeometry(5, 3, 20, 6);
+
+  var mat = new THREE.MeshPhongMaterial();
+  // mat.wireframe = true
+  torus = new THREE.Mesh(geom, mat);
+  torus.position.x = origin.x;
+  torus.position.y = origin.y;
+  torus.position.z = origin.z;
+  torus.visible = false;
+  meshes.push(torus);
+  space.add(torus);
+};
+
+var initIso = function initIso() {
+  var geom = new THREE.IcosahedronGeometry(6);
+  var mat = mat_perlin;
+  // let mat = new THREE.MeshPhongMaterial();
+  ico = new THREE.Mesh(geom, mat);
+  ico.position.x = origin.x;
+  ico.position.y = origin.y;
+  ico.position.z = origin.z;
+  ico.visible = false;
+  meshes.push(ico);
+  space.add(ico);
+};
+
+var initMultSphere = function initMultSphere() {
+  mult_sphere = new THREE.Group();
+  for (var i = 0; i < 5; i++) {
+    var geom = new THREE.SphereGeometry(10, 10, 10);
+    var mat = new THREE.MeshPhongMaterial({ flatShading: true });
+    var mesh = new THREE.Mesh(geom, mat);
+    mult_sphere.add(mesh);
+  }
+};
+
+var initMultCube = function initMultCube() {
+  mult_cube = new THREE.Group();
+  for (var i = 0; i < 5; i++) {
+    var geom = new THREE.BoxGeometry(10, 10, 10);
+    var mat = new THREE.MeshPhongMaterial({ flatShading: true });
+    var mesh = new THREE.Mesh(geom, mat);
+    mult_cube.add(mesh);
+  }
+};
+
+var initMultTorus = function initMultTorus() {
+  mult_torus = new THREE.Group();
+  for (var i = 0; i < 5; i++) {
+    var geom = new THREE.TorusGeometry(10, 10, 10);
+    var mat = new THREE.MeshPhongMaterial({ flatShading: true });
+    var mesh = new THREE.Mesh(geom, mat);
+    mult_torus.add(mesh);
+  }
+};
+
+var initMultIso = function initMultIso() {
+  mult_ico = new THREE.Group();
+  for (var i = 0; i < 5; i++) {
+    var geom = new THREE.IcosahedronGeometry(10, 10, 10);
+    var mat = new THREE.MeshPhongMaterial({ flatShading: true });
+    var mesh = new THREE.Mesh(geom, mat);
+    mult_ico.add(mesh);
+  }
+};
+
+var mat_noise = void 0;
+var mat_perlin = void 0;
+var mat_stripes = void 0;
+var mat_basic = void 0;
 
 var loadShaders = function loadShaders() {
   mat_noise = new THREE.RawShaderMaterial({
@@ -6795,10 +6970,10 @@ var loadShaders = function loadShaders() {
       uIntervalSpeed: { type: 'f', value: 20.0 },
       uBloomSpeed: { type: 'f', value: 0.01 },
       uBloomIntensity: { type: 'f', value: 0.001 },
-      uTanSquaresSize: { type: 'f', value: 0.1 },
+      uTanSquaresSize: { type: 'f', value: 0.4 },
       uTanSquareModulo: { type: 'f', value: 20. },
       uNoiseDist: { type: 'f', value: 6.0 },
-      uNoiseSize: { type: 'f', value: 0.05 },
+      uNoiseSize: { type: 'f', value: 0.01 },
       uNoiseSpeed: { type: 'f', value: 0.001 },
       uNoiseImpact: { type: 'f', value: 1 }
     },
@@ -6806,7 +6981,45 @@ var loadShaders = function loadShaders() {
     fragmentShader: _noise4.default
   });
 
-  comet.material = mat_noise;
+  sphere.material = mat_noise;
+
+  mat_stripes = new THREE.RawShaderMaterial({
+    uniforms: {
+      uColor: { type: "c", value: new THREE.Color(0xffff00) },
+      uTime: { value: 1 },
+      uStep: { type: 'f', value: 0.1 },
+      uInvert: { value: true }
+    },
+    vertexShader: _stripes2.default,
+    fragmentShader: _stripes4.default
+  });
+
+  cube.material = mat_stripes;
+
+  //----------------------BASIC
+  mat_basic = new THREE.RawShaderMaterial({
+    uniforms: {
+      uColor: { type: "c", value: new THREE.Color(0xffff00) },
+      uTime: { value: 1 },
+      uStep: { type: 'f', value: 0.1 },
+      uInvert: { value: true }
+    },
+    vertexShader: _basic2.default,
+    fragmentShader: _basic4.default
+  });
+
+  torus.material = mat_basic;
+
+  //----------------------PERLIN
+  mat_perlin = new THREE.RawShaderMaterial({
+    uniforms: {
+      uTime: { type: 'f', value: 1.0 }
+    },
+    vertexShader: _perlin2.default,
+    fragmentShader: _perlin4.default
+  });
+
+  ico.material = mat_perlin;
 };
 
 var setupLights = function setupLights() {
@@ -6824,11 +7037,14 @@ var loadObject = function loadObject() {
   var loader = new THREE.OBJLoader();
 
   loader.load('bundle/assets/obj/OSLogoDJ-straight-straight.obj', function (object) {
-    console.log(object);
+
     for (var i = 0; i < object.children; i++) {
       object.children[i].material = new THREE.MeshPhongMaterial({ flatShading: true });
     }
+
     logo = object;
+
+    loadShaders();
 
     logo.position.x = origin.x;
     logo.position.y = origin.y;
@@ -6837,22 +7053,36 @@ var loadObject = function loadObject() {
     logo.scale.y = 0.2;
     logo.scale.z = 0.2;
     logo.rotation.y = Math.PI / 2;
-
+    logo.visible = false;
+    meshes.push(logo);
     space.add(logo);
   });
 };
 
 var animate = function animate() {
-  if (logo != undefined) {
-    logo.position.x = Math.cos(clock.getElapsedTime() * 0.1) * orbit_radius;
-    logo.position.z = Math.sin(clock.getElapsedTime() * 0.1) * orbit_radius;
-    // for(var i = 0; i < logo.children.length; i++){
-    logo.lookAt(origin);
-    // }
-    // logo.rotation.x = Math.PI/2
-  }
+  if (launched) {
+    //ORBIT
+    actor.position.x = Math.sin(clock.getElapsedTime() * state.speed.x) * state.radius;
+    actor.position.z = Math.cos(clock.getElapsedTime() * state.speed.x) * state.radius;
 
-  comet.material.uniforms.uTime.value = clock.getElapsedTime();
+    //OFFSET
+    actor.position.y = Math.sin(clock.getElapsedTime() * state.speed.y) * state.offset;
+
+    //ROTATION
+    actor.rotation.x += state.rotation.x;
+    actor.rotation.y += state.rotation.y;
+    actor.rotation.z += state.rotation.z;
+
+    if (sphere.material != undefined) sphere.material.uniforms.uTime.value = clock.getElapsedTime();
+
+    if (cube.material != undefined) cube.material.uniforms.uTime.value = clock.getElapsedTime();
+
+    if (torus.material != undefined) torus.material.uniforms.uTime.value = clock.getElapsedTime();
+
+    if (ico.material != undefined) ico.material.uniforms.uTime.value = clock.getElapsedTime();
+
+    if (logo.visible) actor.lookAt(origin);
+  }
 };
 
 var render = function render() {
@@ -6970,7 +7200,6 @@ _exports.init = function () {
   });
 
   socket.on('set', function (data) {
-    console.log('RECEIVER: received new ' + data.group + ' command...');
     if (data.group == 'rotation') explorer.setRotation(data.axis, data.value);else if (data.group == 'orbit') explorer.setOrbit(data.axis, data.value);else if (data.group == 'speed') explorer.setSpeed(data.axis, data.value);
   });
 
@@ -51899,6 +52128,45 @@ module.exports = function (THREE) {
 
   };
 };
+
+/***/ }),
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */
+/***/ (function(module, exports) {
+
+module.exports = "precision highp float;\n\nuniform mat4 projectionMatrix;\nuniform mat4 modelViewMatrix;\n\nattribute vec3 position;\nvarying vec3 vPos;\n\nvoid main() {\n\tvec3 pos = position;\n\tvPos = position;\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );\n}\n"
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports) {
+
+module.exports = "precision highp float;\n\nuniform vec3 uColor;\nuniform float uTime;\nuniform float uStep;\nuniform bool uInvert;\n\nvarying vec3 vPos;\n\nfloat remap(float old_value, float old_min, float old_max, float new_min, float new_max){\n\tfloat new_value = 0.;\n\n\tnew_value = ((old_value - old_min) / (old_max - old_min)) * (new_max - new_min) + new_min;\n\n\treturn new_value;\n}\n\nvoid main() {\n\tfloat a = 1.0;\n\tfloat sin_mod = 0.01;\n\tvec3 origin = vec3(0, 0, 0);\n\tvec3 col = vec3((vPos.x+1.0)*0.5);\n\tfloat bw = sin(uTime*0.001 * (mod(vPos.y, 1000.)-500.)) > 0. ? 1. : .2;\n\tcol.r = col.g = col.b = bw;\n\n\tfloat dist = distance(origin, vPos);\n\tfloat n_dist = distance(origin, vPos);\n\n\tif(uInvert && mod(vPos.x, 30.) < 25.\n\t\t&& mod(vPos.y, 30.) > 5.\n\t\t&& sin(vPos.y*0.1) > 0.5\n\t\t&& tan(vPos.y*0.001 + vPos.y*0.1 - uTime) < 1.){\n\t\t\tcol.r = col.g = col.b = 1.-col.r;\n\t\t}\n\n\n\tgl_FragColor = vec4( col, a);\n}\n"
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports) {
+
+module.exports = "precision highp float;\n\nuniform mat4 projectionMatrix;\nuniform mat4 modelViewMatrix;\n\nattribute vec3 position;\nvarying vec3 vPos;\n\nvoid main() {\n\tvec3 pos = position;\n\tvPos = position;\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );\n}\n"
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports) {
+
+module.exports = "precision highp float;\n\n#define HASHSCALE1 .1031\n\n// noise https://github.com/ashima/webgl-noise/blob/master/src/noise3D.glsl\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\nfloat hash11(float p) {\n\tvec3 p3  = fract(vec3(p) * HASHSCALE1);\n    p3 += dot(p3, p3.yzx + 19.19);\n    return fract((p3.x + p3.y) * p3.z);\n}\n\nuniform vec3 uColor;\nuniform float uTime;\nuniform float uStep;\nuniform bool uInvert;\n\nvarying vec3 vPos;\n\nvoid main() {\n\tfloat a = 1.0;\n\tfloat sin_mod = .5;\n\tvec3 col = vec3(0., 1., 1.);\n\n\tfloat bw = sin(sin_mod*uTime+mod(vPos.y+300., 22.0+hash11(uTime*.001)*10.) + cos(sin_mod*uTime+sin(vPos.x)));\n\tfloat val = bw > 0. ? 1. : 0.;\n\tcol = vec3(val);\n\n\n\tgl_FragColor = vec4( col, a);\n}\n"
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports) {
+
+module.exports = "precision highp float;\n\nuniform mat4 projectionMatrix;\nuniform mat4 modelViewMatrix;\n\nattribute vec3 position;\n\nvarying vec3 vPosition;\n\nvoid main() {\n  vPosition = position;\n\n  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1);\n}\n"
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports) {
+
+module.exports = "precision mediump float;\nuniform float uTime;\nvarying vec3  vPosition;\n\n// COMPUTE THE Z FOR A SPHERE OF RADIUS r.\n\nfloat computeZ(vec2 xy, float r) {\n   //float zz = 1.0 - sqrt(xy.x*xy.y + xy.x*xy.y) ;\n   float zz = xy.x / xy.y;\n      return zz;\n}\n\nvoid main() {\n   float x = vPosition.x;\n   float y = vPosition.y;\n   float s = 0.;\n\n   s = (mod(x, 2.0) * 0.1 + mod(y, 2.0+abs(vPosition.y)) * 0.15 + cos(mod(uTime, 10.0+abs(vPosition.z))) + sin(mod(uTime, 9.0))) > 0. ? 1. : 0.;\n\n   gl_FragColor = vec4(vec3(1.)*s, 1.);\n}\n"
 
 /***/ })
 /******/ ]);

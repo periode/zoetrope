@@ -6694,6 +6694,8 @@ window.shade = sender.shade;
 var _exports = module.exports = {};
 
 var SOCKET_SERVER = "localhost:2046";
+// const SOCKET_SERVER = "169.254.110.10:2046";
+
 var io = __webpack_require__(20);
 var socket = void 0;
 
