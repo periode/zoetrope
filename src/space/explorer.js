@@ -1,5 +1,8 @@
 let exports = module.exports = {};
 
+import vsNoise from '../shaders/noise.vs'
+import fsNoise from '../shaders/noise.fs'
+
 exports.init = function(){
   setTimeout(setup, 10)
   console.log('EXPLORER: systems init')
@@ -109,12 +112,43 @@ let setup = function  (){
   comet.position.x = origin.x
   comet.position.y = origin.y
   comet.position.z = origin.z
-  // space.add(comet)
+  space.add(comet)
 
-  loadObject()
+  loadShaders()
+  // loadObject()
 
   console.log(comet)
   render()
+}
+
+let frag_noise, vert_noise, mat_noise
+let frag_perlin, vert_perlin, mat_perlin
+let frag_stripes, vert_stripes, mat_stripes
+let frag_background, vert_background, mat_background
+
+let loadShaders = () => {
+  mat_noise = new THREE.RawShaderMaterial({
+    uniforms: {
+      uTime:{type: 'f', value: 0.0},
+      uVerticalInterval:{type: 'f', value: 50.0},
+      uVerticalSpeed:{type: 'f', value: 0.1},
+      uIntervalCoeff:{type: 'f', value: 1},
+      uIntervalModulo:{type: 'f', value: 100.0},
+      uIntervalSpeed:{type: 'f', value: 20.0},
+      uBloomSpeed:{type: 'f', value: 0.01},
+      uBloomIntensity:{type: 'f', value: 0.001},
+      uTanSquaresSize:{type: 'f', value: 0.1},
+      uTanSquareModulo:{type: 'f', value: 20.},
+      uNoiseDist:{type: 'f', value: 6.0},
+      uNoiseSize:{type: 'f', value: 0.05},
+      uNoiseSpeed:{type: 'f', value: 0.001},
+      uNoiseImpact:{type: 'f', value: 1}
+    },
+    vertexShader: vsNoise,
+    fragmentShader: fsNoise
+  })
+
+  comet.material = mat_noise
 }
 
 let setupLights = () => {
@@ -159,6 +193,8 @@ let animate = () => {
     // }
     // logo.rotation.x = Math.PI/2
   }
+
+  comet.material.uniforms.uTime.value = clock.getElapsedTime();
 
 }
 

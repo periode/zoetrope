@@ -6661,6 +6661,16 @@ Backoff.prototype.setJitter = function(jitter){
 
 var _state;
 
+var _noise = __webpack_require__(47);
+
+var _noise2 = _interopRequireDefault(_noise);
+
+var _noise3 = __webpack_require__(48);
+
+var _noise4 = _interopRequireDefault(_noise3);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var _exports = module.exports = {};
@@ -6707,8 +6717,8 @@ _exports.shade = function (_shader) {
   if (_shader == 'default') actor.material = 'default';else if (_shader == 'noise') actor.material = 'noise';else if (_shader == 'stripes') actor.material = 'stripes';
 };
 
-var THREE = __webpack_require__(47);
-var OBJLoader = __webpack_require__(48);
+var THREE = __webpack_require__(49);
+var OBJLoader = __webpack_require__(50);
 OBJLoader(THREE);
 
 var space = void 0,
@@ -6752,12 +6762,51 @@ var setup = function setup() {
   comet.position.x = origin.x;
   comet.position.y = origin.y;
   comet.position.z = origin.z;
-  // space.add(comet)
+  space.add(comet);
 
-  loadObject();
+  loadShaders();
+  // loadObject()
 
   console.log(comet);
   render();
+};
+
+var frag_noise = void 0,
+    vert_noise = void 0,
+    mat_noise = void 0;
+var frag_perlin = void 0,
+    vert_perlin = void 0,
+    mat_perlin = void 0;
+var frag_stripes = void 0,
+    vert_stripes = void 0,
+    mat_stripes = void 0;
+var frag_background = void 0,
+    vert_background = void 0,
+    mat_background = void 0;
+
+var loadShaders = function loadShaders() {
+  mat_noise = new THREE.RawShaderMaterial({
+    uniforms: {
+      uTime: { type: 'f', value: 0.0 },
+      uVerticalInterval: { type: 'f', value: 50.0 },
+      uVerticalSpeed: { type: 'f', value: 0.1 },
+      uIntervalCoeff: { type: 'f', value: 1 },
+      uIntervalModulo: { type: 'f', value: 100.0 },
+      uIntervalSpeed: { type: 'f', value: 20.0 },
+      uBloomSpeed: { type: 'f', value: 0.01 },
+      uBloomIntensity: { type: 'f', value: 0.001 },
+      uTanSquaresSize: { type: 'f', value: 0.1 },
+      uTanSquareModulo: { type: 'f', value: 20. },
+      uNoiseDist: { type: 'f', value: 6.0 },
+      uNoiseSize: { type: 'f', value: 0.05 },
+      uNoiseSpeed: { type: 'f', value: 0.001 },
+      uNoiseImpact: { type: 'f', value: 1 }
+    },
+    vertexShader: _noise2.default,
+    fragmentShader: _noise4.default
+  });
+
+  comet.material = mat_noise;
 };
 
 var setupLights = function setupLights() {
@@ -6802,6 +6851,8 @@ var animate = function animate() {
     // }
     // logo.rotation.x = Math.PI/2
   }
+
+  comet.material.uniforms.uTime.value = clock.getElapsedTime();
 };
 
 var render = function render() {
@@ -6930,6 +6981,18 @@ _exports.init = function () {
 
 /***/ }),
 /* 47 */
+/***/ (function(module, exports) {
+
+module.exports = "precision highp float;\n\nuniform mat4 projectionMatrix;\nuniform mat4 modelViewMatrix;\n\nattribute vec3 position;\nvarying vec3 vPosition;\n\nvoid main(){\n  vPosition = position;\n\n  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1);\n}\n"
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports) {
+
+module.exports = "precision highp float;\n\n#define HASHSCALE1 .1031\n\nuniform float uTime;\nvarying vec3 vPosition;\nvec3 col;\nfloat alpha;\n\n\n// noise https://github.com/ashima/webgl-noise/blob/master/src/noise3D.glsl\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\nfloat hash11(float p) {\n\tvec3 p3  = fract(vec3(p) * HASHSCALE1);\n    p3 += dot(p3, p3.yzx + 19.19);\n    return fract((p3.x + p3.y) * p3.z);\n}\n\nuniform float uVerticalInterval;\nuniform float uVerticalSpeed;\n\nuniform float uIntervalCoeff;\nuniform float uIntervalModulo;\nuniform float uIntervalSpeed;\n\nuniform float uBloomSpeed;\nuniform float uBloomIntensity;\n\nuniform float uTanSquaresSize;\nuniform float uTanSquareModulo;\n\nuniform float uNoiseDist;\nuniform float uNoiseSize;\nuniform float uNoiseSpeed;\nuniform float uNoiseImpact;\n\nvoid main() {\n  alpha = 1.;\n  vec3 origin = vec3(0.);\n  float edge = 60.;\n  if(distance(origin, vPosition) < edge){\n    // col = vec3( (sin(hash11(vPosition.x + uTime*0.0001))+1.)*0.5);\n    // col.r = col.g = col.b = pow(col.r, 10.);\n\n\n    // RANDOM\n    col = vec3(hash11((vPosition.y-100.-uTime*10.)*0.000005));\n\n\n    // MODULO\n    float innerModulo = mod(vPosition.x + uTime*uVerticalSpeed, uVerticalInterval);\n    col.r -= innerModulo;\n    col.g -= innerModulo;\n    col.b -= innerModulo;\n\n\n    float interval = mod(vPosition.x*uIntervalCoeff + vPosition.y*uIntervalCoeff * vPosition.z * uIntervalCoeff + uTime*uIntervalSpeed, uIntervalModulo);\n    col.r *= interval;\n    col.g *= interval;\n    col.b *= interval;\n\n\n    // BLOOM\n\n    vec3 bloom = vec3(sin(uTime*uBloomSpeed)*edge, cos(uTime*uBloomSpeed*0.1)*edge, 0.);\n\n    float circle = mix(distance(bloom, vPosition), 0., edge);\n    col -= circle*mod(vPosition.x + vPosition.y + uTime*100., 100.)*uBloomIntensity;\n\n    if(mod(tan(vPosition.y*uTanSquaresSize + uTime*.1), 100.) > uTanSquareModulo){\n      col *= .01;\n    }\n\n    float waves = mix(distance(origin, vPosition), 0., snoise(vec3(vPosition.x*uNoiseSize, vPosition.y *uNoiseSize, uTime*uNoiseSpeed))*uNoiseDist);\n    col *= waves*uNoiseImpact;\n\n\n  }else{\n    col = vec3(0.);\n  }\n  gl_FragColor = vec4(col, alpha);\n}\n"
+
+/***/ }),
+/* 49 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51167,7 +51230,7 @@ function CanvasRenderer() {
 
 
 /***/ }),
-/* 48 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

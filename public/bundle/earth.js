@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 49);
+/******/ 	return __webpack_require__(__webpack_require__.s = 51);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -6658,17 +6658,19 @@ Backoff.prototype.setJitter = function(jitter){
 /* 46 */,
 /* 47 */,
 /* 48 */,
-/* 49 */
+/* 49 */,
+/* 50 */,
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _sender = __webpack_require__(50);
+var _sender = __webpack_require__(52);
 
 var sender = _interopRequireWildcard(_sender);
 
-var _panel = __webpack_require__(51);
+var _panel = __webpack_require__(53);
 
 var panel = _interopRequireWildcard(_panel);
 
@@ -6683,7 +6685,7 @@ window.setParameter = sender.setParameter;
 window.shade = sender.shade;
 
 /***/ }),
-/* 50 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6721,7 +6723,7 @@ _exports.shade = function (s) {
 };
 
 /***/ }),
-/* 51 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
