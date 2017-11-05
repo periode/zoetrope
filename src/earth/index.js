@@ -4,9 +4,7 @@ import * as panel from './panel'
 sender.connect();
 panel.setup();
 
-let launch = function(){
-  sender.launch();
-}
-
-
 window.launch = sender.launch
+window.introduce = sender.introduce
+window.setParameter = sender.setParameter
+window.shade = sender.shade

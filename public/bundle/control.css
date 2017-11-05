@@ -1,0 +1,71 @@
+@media only screen and (max-device-width: 640px), only screen and (max-device-width: 667px), only screen and (max-width: 480px) and (orientation : portrait) {
+
+  body{
+    margin: 0;
+    padding: 0;
+    font-family: Trebuchet MS;
+    font-size: 3em;
+    width: 100%;
+    height: 100%;
+  }
+
+  h1{
+
+  }
+
+  h2{
+    float: left;
+    width: 100%;
+    margin: 0;
+    margin-top: 40px;
+    text-align: center;
+    background-color: black;
+    color: white;
+  }
+
+  h3{
+    margin: 2px;
+  }
+
+  button{
+    border: 10px solid black;
+    background-color: white;
+    font-size: 86px;
+    width: 90%;
+    margin: 10px;
+  }
+
+  button:active{
+    background-color: black;
+    color: white;
+  }
+
+  button.level{
+    width: 10%;
+  }
+
+  .section{
+    float: left;
+    display: block;
+    height: 30%;
+    overflow: visible;
+  }
+
+  .parameter{
+    width: 100%;
+    text-align: center;
+    font-size: 1.8em;
+  }
+
+  .left{
+    width: 40%;
+    float: left;
+    height: auto;
+  }
+
+  .right{
+    width: 40%;
+    float: right;
+    height: auto;
+  }
+}

@@ -5,11 +5,51 @@
   <meta content='width=device-width, initial-scale=.1, maximum-scale=.1, user-scalable=0' name='viewport' />
   <title>control</title>
   <script src="./bundle/earth.js"></script>
+  <link rel="stylesheet" href="bundle/control.css" />
 </head>
 <body>
   <div id="container">
     <h1>zoetrope - control</h1>
     <button onclick="launch()">launch</button>
+    <button onclick="introduce('logo')">logo</button>
+    <h2>set current actor</h2>
+    <div class="section">
+      <div class="left">
+        <button onclick="introduce('sphere')">sphere</button>
+        <button onclick="introduce('isocahedron')">iso</button>
+        <button onclick="introduce('torus')">torus</button>
+        <button onclick="introduce('cube')">cube</button>
+      </div>
+      <div class="right">
+        <button onclick="introduce('mult_sphere')">mult_sphere</button>
+        <button onclick="introduce('mult_isocahedron')">mult_iso</button>
+        <button onclick="introduce('mult_torus')">mult_torus</button>
+        <button onclick="introduce('mult_cube')">mult_cube</button>
+      </div>
+    </div>
+    <h2>current actor movement</h2>
+    <div class="parameter">
+      <button onclick="setParameter('rotation', 'x', -1)" class="level">-</button>rotation x<button onclick="setParameter('rotation', 'x', 1)" class="level">+</button>
+    </div>
+    <div class="parameter">
+      <button onclick="setParameter('rotation', 'y', -1)" class="level">-</button>rotation y<button onclick="setParameter('rotation', 'y', 1)" class="level">+</button>
+    </div>
+    <div class="parameter">
+      <button onclick="setParameter('rotation', 'z', -1)" class="level">-</button>rotation z<button onclick="setParameter('rotation', 'z', 1)" class="level">+</button>
+    </div>
+    <div class="parameter">
+      <button onclick="setParameter('orbit', 'radius', -1)" class="level">-</button>orbit radius<button onclick="setParameter('orbit', 'radius', 1)" class="level">+</button>
+    </div>
+    <div class="parameter">
+      <button onclick="setParameter('orbit', 'speed', -1)" class="level">-</button>orbit speed<button onclick="setParameter('orbit', 'radius', 1)" class="level">+</button>
+    </div>
+    <div class="parameter">
+      <button onclick="setParameter('orbit', 'offset', -1)" class="level">-</button>orbit offset<button onclick="setParameter('orbit', 'offset', 1)" class="level">+</button>
+    </div>
+    <h2>current actor shader</h2>
+    <button onclick="shade('default')">default</button>
+    <button onclick="shade('stripes')">stripes</button>
+    <button onclick="shade('noise')">noise</button>
   </div>
 </body>
 </html>

@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 48);
+/******/ 	return __webpack_require__(__webpack_require__.s = 49);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -6657,17 +6657,18 @@ Backoff.prototype.setJitter = function(jitter){
 /* 45 */,
 /* 46 */,
 /* 47 */,
-/* 48 */
+/* 48 */,
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _sender = __webpack_require__(49);
+var _sender = __webpack_require__(50);
 
 var sender = _interopRequireWildcard(_sender);
 
-var _panel = __webpack_require__(50);
+var _panel = __webpack_require__(51);
 
 var panel = _interopRequireWildcard(_panel);
 
@@ -6676,14 +6677,13 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 sender.connect();
 panel.setup();
 
-var launch = function launch() {
-  sender.launch();
-};
-
 window.launch = sender.launch;
+window.introduce = sender.introduce;
+window.setParameter = sender.setParameter;
+window.shade = sender.shade;
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6708,8 +6708,20 @@ _exports.launch = function () {
   socket.emit('launch');
 };
 
+_exports.introduce = function (actor) {
+  socket.emit('introduce', actor);
+};
+
+_exports.setParameter = function (g, p, v) {
+  socket.emit('set', { group: g, param: p, value: v });
+};
+
+_exports.shade = function (s) {
+  socket.emit('shade', { shader: s });
+};
+
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

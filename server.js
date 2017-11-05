@@ -16,8 +16,23 @@ const io = require('socket.io')(server);
 io.sockets.on('connection', function(socket){
 	console.log('new user:',socket.id);
 
-	socket.on('launch', function(){
+	socket.on('launch', () => {
     console.log('receiving launch');
 		socket.broadcast.emit('launch', true);
+	});
+
+  socket.on('introduce', (data) => {
+    console.log('receiving introduce:', data);
+		socket.broadcast.emit('launch', true);
+	});
+
+  socket.on('set', (data) => {
+    console.log('receiving set:',data);
+		socket.broadcast.emit('set-parameter', data);
+	});
+
+  socket.on('shade', (data) => {
+    console.log('receiving shade:', data);
+		socket.broadcast.emit('shade', data);
 	});
 });

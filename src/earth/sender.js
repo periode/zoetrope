@@ -16,3 +16,15 @@ exports.launch = function(){
   console.log('SENDER: requesting launch');
   socket.emit('launch');
 }
+
+exports.introduce = (actor) => {
+  socket.emit('introduce', actor)
+}
+
+exports.setParameter = (g, p, v) => {
+  socket.emit('set', {group:g, param: p, value: v})
+}
+
+exports.shade = (s) => {
+  socket.emit('shade', {shader:s})
+}

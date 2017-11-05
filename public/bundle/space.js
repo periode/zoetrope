@@ -6671,7 +6671,7 @@ _exports.init = function () {
 };
 
 var THREE = __webpack_require__(47);
-var OBJLoader = __webpack_require__(51);
+var OBJLoader = __webpack_require__(48);
 OBJLoader(THREE);
 
 var space = void 0,
@@ -51117,10 +51117,7 @@ function CanvasRenderer() {
 
 
 /***/ }),
-/* 48 */,
-/* 49 */,
-/* 50 */,
-/* 51 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
