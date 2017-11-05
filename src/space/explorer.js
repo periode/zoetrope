@@ -9,6 +9,61 @@ exports.init = function(){
   window.addEventListener('resize', onWindowResize, false)
 }
 
+exports.launch = () =>{
+  console.log('EXPLORER: launched!')
+  clock.start()
+}
+
+exports.introduce = (_actor) => {
+  console.log('introducing', _actor);
+  //make current actor go down (using tweening)
+  //once past a certain threshold, swap the actor
+  //put it back up
+  //make it go down to the middle
+}
+
+exports.setRotation = (_axis, _value) => {
+  console.log('setting rotation:', _axis, _value);
+  if(_axis == 'x')
+    state.rotation.x = _value
+  else if(_axis == 'y')
+    state.rotation.y = _value
+  else if(_axis == 'z')
+    state.rotation.z = _value
+  else
+    console.log('setRotation: unexpected axis', _axis);
+}
+
+exports.setOrbit = (_axis, _value) => {
+  console.log('setting orbit:', _axis, _value);
+  if(_axis == 'radius')
+    state.radius = _value
+  else if(_axis == 'offset')
+    state.offset = _value
+  else
+      console.log('setOrbit: unexpected axis', _axis);
+}
+
+exports.setSpeed = (_axis, _value) => {
+  console.log('setting speed', _axis, _value);
+  if(_axis == 'x')
+    state.speed.x = _value
+  else if(_axis == 'y')
+    state.speed.y = _value
+  else
+    console.log('setSpeed: unexpected axis', _axis);
+}
+
+exports.shade = (_shader) => {
+  console.log('shading', _shader);
+  if(_shader == 'default')
+    actor.material = 'default'
+  else if(_shader == 'noise')
+    actor.material = 'noise'
+  else if(_shader == 'stripes')
+    actor.material = 'stripes'
+}
+
 
 const THREE = require('three')
 const OBJLoader = require('three-obj-loader');
@@ -21,7 +76,15 @@ let comet, logo
 let clock
 
 //---------
+let actor
 let orbit_radius = 0
+let state = {
+  'speed': 0,
+  'rotation': new THREE.Vector3(0, 0, 0),
+  'speed': new THREE.Vector3(0, 0, 0),
+  'offset': 0,
+  'radius': 0
+}
 
 let setup = function  (){
   space = new THREE.Scene()
@@ -85,13 +148,6 @@ let loadObject = () => {
 
     space.add(logo)
   })
-}
-
-
-exports.launch = () =>{
-  console.log('EXPLORER: launched!')
-  clock.start()
-  orbit_radius = porthole_distance*0.8
 }
 
 let animate = () => {

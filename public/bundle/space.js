@@ -6659,6 +6659,10 @@ Backoff.prototype.setJitter = function(jitter){
 "use strict";
 
 
+var _state;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var _exports = module.exports = {};
 
 _exports.init = function () {
@@ -6668,6 +6672,39 @@ _exports.init = function () {
   window.addEventListener('click', fullscreen);
   window.addEventListener('keypress', onKeypress);
   window.addEventListener('resize', onWindowResize, false);
+};
+
+_exports.launch = function () {
+  console.log('EXPLORER: launched!');
+  clock.start();
+};
+
+_exports.introduce = function (_actor) {
+  console.log('introducing', _actor);
+  //make current actor go down (using tweening)
+  //once past a certain threshold, swap the actor
+  //put it back up
+  //make it go down to the middle
+};
+
+_exports.setRotation = function (_axis, _value) {
+  console.log('setting rotation:', _axis, _value);
+  if (_axis == 'x') state.rotation.x = _value;else if (_axis == 'y') state.rotation.y = _value;else if (_axis == 'z') state.rotation.z = _value;else console.log('setRotation: unexpected axis', _axis);
+};
+
+_exports.setOrbit = function (_axis, _value) {
+  console.log('setting orbit:', _axis, _value);
+  if (_axis == 'radius') state.radius = _value;else if (_axis == 'offset') state.offset = _value;else console.log('setOrbit: unexpected axis', _axis);
+};
+
+_exports.setSpeed = function (_axis, _value) {
+  console.log('setting speed', _axis, _value);
+  if (_axis == 'x') state.speed.x = _value;else if (_axis == 'y') state.speed.y = _value;else console.log('setSpeed: unexpected axis', _axis);
+};
+
+_exports.shade = function (_shader) {
+  console.log('shading', _shader);
+  if (_shader == 'default') actor.material = 'default';else if (_shader == 'noise') actor.material = 'noise';else if (_shader == 'stripes') actor.material = 'stripes';
 };
 
 var THREE = __webpack_require__(47);
@@ -6685,7 +6722,12 @@ var comet = void 0,
 var clock = void 0;
 
 //---------
+var actor = void 0;
 var orbit_radius = 0;
+var state = (_state = {
+  'speed': 0,
+  'rotation': new THREE.Vector3(0, 0, 0)
+}, _defineProperty(_state, 'speed', new THREE.Vector3(0, 0, 0)), _defineProperty(_state, 'offset', 0), _defineProperty(_state, 'radius', 0), _state);
 
 var setup = function setup() {
   space = new THREE.Scene();
@@ -6749,12 +6791,6 @@ var loadObject = function loadObject() {
 
     space.add(logo);
   });
-};
-
-_exports.launch = function () {
-  console.log('EXPLORER: launched!');
-  clock.start();
-  orbit_radius = porthole_distance * 0.8;
 };
 
 var animate = function animate() {
@@ -6866,15 +6902,29 @@ var socket = void 0;
 var explorer = __webpack_require__(44);
 
 _exports.init = function () {
-  this.socket = io.connect(SOCKET_SERVER);
+  socket = io.connect(SOCKET_SERVER);
 
-  this.socket.on('connect', function () {
+  socket.on('connect', function () {
     console.log('RECEIVER: connected');
   });
 
-  this.socket.on('launch', function () {
+  socket.on('launch', function () {
     console.log('RECEIVER: received launch command...');
     explorer.launch();
+  });
+
+  socket.on('introduce', function (actor) {
+    console.log('RECEIVER: introducing', actor);
+    explorer.introduce(actor);
+  });
+
+  socket.on('set', function (data) {
+    console.log('RECEIVER: received new ' + data.group + ' command...');
+    if (data.group == 'rotation') explorer.setRotation(data.axis, data.value);else if (data.group == 'orbit') explorer.setOrbit(data.axis, data.value);else if (data.group == 'speed') explorer.setSpeed(data.axis, data.value);
+  });
+
+  socket.on('shade', function (shader) {
+    console.log('RECEIVER: received shade command for', shader);
   });
 };
 

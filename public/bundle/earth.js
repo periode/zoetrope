@@ -6713,11 +6713,11 @@ _exports.introduce = function (actor) {
 };
 
 _exports.setParameter = function (g, p, v) {
-  socket.emit('set', { group: g, param: p, value: v });
+  socket.emit('set', { group: g, axis: p, value: v });
 };
 
 _exports.shade = function (s) {
-  socket.emit('shade', { shader: s });
+  socket.emit('shade', s);
 };
 
 /***/ }),

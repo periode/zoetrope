@@ -8,15 +8,34 @@ let socket
 
 let explorer = require('./explorer.js')
 
-exports.init = function(){
-  this.socket = io.connect(SOCKET_SERVER);
+exports.init = () =>{
+  socket = io.connect(SOCKET_SERVER);
 
-  this.socket.on('connect', function(){
+  socket.on('connect', () => {
     console.log('RECEIVER: connected');
-  });
+  })
 
-  this.socket.on('launch', function(){
-    console.log('RECEIVER: received launch command...');
+  socket.on('launch', () => {
+    console.log('RECEIVER: received launch command...')
     explorer.launch();
+  })
+
+  socket.on('introduce', (actor) => {
+    console.log('RECEIVER: introducing',actor)
+    explorer.introduce(actor)
+  })
+
+  socket.on('set', (data) => {
+    console.log('RECEIVER: received new '+data.group+' command...');
+    if(data.group == 'rotation')
+      explorer.setRotation(data.axis, data.value)
+    else if(data.group == 'orbit')
+      explorer.setOrbit(data.axis, data.value)
+    else if(data.group == 'speed')
+      explorer.setSpeed(data.axis, data.value)
+  })
+
+  socket.on('shade', (shader) => {
+    console.log('RECEIVER: received shade command for', shader);
   });
 }

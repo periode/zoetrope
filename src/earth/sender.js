@@ -22,9 +22,9 @@ exports.introduce = (actor) => {
 }
 
 exports.setParameter = (g, p, v) => {
-  socket.emit('set', {group:g, param: p, value: v})
+  socket.emit('set', {group:g, axis: p, value: v})
 }
 
 exports.shade = (s) => {
-  socket.emit('shade', {shader:s})
+  socket.emit('shade', s)
 }

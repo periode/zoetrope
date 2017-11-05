@@ -23,12 +23,12 @@ io.sockets.on('connection', function(socket){
 
   socket.on('introduce', (data) => {
     console.log('receiving introduce:', data);
-		socket.broadcast.emit('launch', true);
+		socket.broadcast.emit('introduce', data);
 	});
 
   socket.on('set', (data) => {
     console.log('receiving set:',data);
-		socket.broadcast.emit('set-parameter', data);
+		socket.broadcast.emit('set', data);
 	});
 
   socket.on('shade', (data) => {
