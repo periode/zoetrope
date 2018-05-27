@@ -154,7 +154,7 @@ let state = {
 
 let setup = function  (){
   space = new THREE.Scene()
-  space.background = new THREE.Color('white')
+  space.background = new THREE.Color('black')
 
   clock = new THREE.Clock(false)
 

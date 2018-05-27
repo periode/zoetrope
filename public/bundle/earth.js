@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 51);
+/******/ 	return __webpack_require__(__webpack_require__.s = 57);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -6660,17 +6660,23 @@ Backoff.prototype.setJitter = function(jitter){
 /* 48 */,
 /* 49 */,
 /* 50 */,
-/* 51 */
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */,
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _sender = __webpack_require__(52);
+var _sender = __webpack_require__(58);
 
 var sender = _interopRequireWildcard(_sender);
 
-var _panel = __webpack_require__(53);
+var _panel = __webpack_require__(59);
 
 var panel = _interopRequireWildcard(_panel);
 
@@ -6685,7 +6691,7 @@ window.setParameter = sender.setParameter;
 window.shade = sender.shade;
 
 /***/ }),
-/* 52 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6693,8 +6699,8 @@ window.shade = sender.shade;
 
 var _exports = module.exports = {};
 
-var SOCKET_SERVER = "localhost:2046";
-// const SOCKET_SERVER = "169.254.110.10:2046";
+// const SOCKET_SERVER = "localhost:2046";
+var SOCKET_SERVER = "169.254.110.10";
 
 var io = __webpack_require__(20);
 var socket = void 0;
@@ -6725,7 +6731,7 @@ _exports.shade = function (s) {
 };
 
 /***/ }),
-/* 53 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

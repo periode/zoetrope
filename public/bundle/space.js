@@ -6669,27 +6669,27 @@ var _noise3 = __webpack_require__(48);
 
 var _noise4 = _interopRequireDefault(_noise3);
 
-var _stripes = __webpack_require__(54);
+var _stripes = __webpack_require__(49);
 
 var _stripes2 = _interopRequireDefault(_stripes);
 
-var _stripes3 = __webpack_require__(55);
+var _stripes3 = __webpack_require__(50);
 
 var _stripes4 = _interopRequireDefault(_stripes3);
 
-var _basic = __webpack_require__(56);
+var _basic = __webpack_require__(51);
 
 var _basic2 = _interopRequireDefault(_basic);
 
-var _basic3 = __webpack_require__(57);
+var _basic3 = __webpack_require__(52);
 
 var _basic4 = _interopRequireDefault(_basic3);
 
-var _perlin = __webpack_require__(58);
+var _perlin = __webpack_require__(53);
 
 var _perlin2 = _interopRequireDefault(_perlin);
 
-var _perlin3 = __webpack_require__(59);
+var _perlin3 = __webpack_require__(54);
 
 var _perlin4 = _interopRequireDefault(_perlin3);
 
@@ -6793,8 +6793,8 @@ _exports.shade = function (_shader) {
   if (_shader == 'default') actor.material = 'default';else if (_shader == 'noise') actor.material = 'noise';else if (_shader == 'stripes') actor.material = 'stripes';
 };
 
-var THREE = __webpack_require__(49);
-var OBJLoader = __webpack_require__(50);
+var THREE = __webpack_require__(55);
+var OBJLoader = __webpack_require__(56);
 OBJLoader(THREE);
 
 var space = void 0,
@@ -6824,7 +6824,7 @@ var state = (_state = {
 
 var setup = function setup() {
   space = new THREE.Scene();
-  space.background = new THREE.Color('white');
+  space.background = new THREE.Color('black');
 
   clock = new THREE.Clock(false);
 
@@ -7176,7 +7176,7 @@ var _exports = module.exports = {};
 //adhoc: 169.254.110.10
 //wifi: 169.225.32.166
 // const SOCKET_SERVER = "169.254.110.10:2046";
-var SOCKET_SERVER = "localhost:2046";
+var SOCKET_SERVER = "169.254.110.10";
 var io = __webpack_require__(20);
 var socket = void 0;
 
@@ -7222,6 +7222,42 @@ module.exports = "precision highp float;\n\n#define HASHSCALE1 .1031\n\nuniform 
 
 /***/ }),
 /* 49 */
+/***/ (function(module, exports) {
+
+module.exports = "precision highp float;\n\nuniform mat4 projectionMatrix;\nuniform mat4 modelViewMatrix;\n\nattribute vec3 position;\nvarying vec3 vPos;\n\nvoid main() {\n\tvec3 pos = position;\n\tvPos = position;\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );\n}\n"
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports) {
+
+module.exports = "precision highp float;\n\nuniform vec3 uColor;\nuniform float uTime;\nuniform float uStep;\nuniform bool uInvert;\n\nvarying vec3 vPos;\n\nfloat remap(float old_value, float old_min, float old_max, float new_min, float new_max){\n\tfloat new_value = 0.;\n\n\tnew_value = ((old_value - old_min) / (old_max - old_min)) * (new_max - new_min) + new_min;\n\n\treturn new_value;\n}\n\nvoid main() {\n\tfloat a = 1.0;\n\tfloat sin_mod = 0.01;\n\tvec3 origin = vec3(0, 0, 0);\n\tvec3 col = vec3((vPos.x+1.0)*0.5);\n\tfloat bw = sin(uTime*0.001 * (mod(vPos.y, 1000.)-500.)) > 0. ? 1. : .2;\n\tcol.r = col.g = col.b = bw;\n\n\tfloat dist = distance(origin, vPos);\n\tfloat n_dist = distance(origin, vPos);\n\n\tif(uInvert && mod(vPos.x, 30.) < 25.\n\t\t&& mod(vPos.y, 30.) > 5.\n\t\t&& sin(vPos.y*0.1) > 0.5\n\t\t&& tan(vPos.y*0.001 + vPos.y*0.1 - uTime) < 1.){\n\t\t\tcol.r = col.g = col.b = 1.-col.r;\n\t\t}\n\n\n\tgl_FragColor = vec4( col, a);\n}\n"
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports) {
+
+module.exports = "precision highp float;\n\nuniform mat4 projectionMatrix;\nuniform mat4 modelViewMatrix;\n\nattribute vec3 position;\nvarying vec3 vPos;\n\nvoid main() {\n\tvec3 pos = position;\n\tvPos = position;\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );\n}\n"
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports) {
+
+module.exports = "precision highp float;\n\n#define HASHSCALE1 .1031\n\n// noise https://github.com/ashima/webgl-noise/blob/master/src/noise3D.glsl\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\nfloat hash11(float p) {\n\tvec3 p3  = fract(vec3(p) * HASHSCALE1);\n    p3 += dot(p3, p3.yzx + 19.19);\n    return fract((p3.x + p3.y) * p3.z);\n}\n\nuniform vec3 uColor;\nuniform float uTime;\nuniform float uStep;\nuniform bool uInvert;\n\nvarying vec3 vPos;\n\nvoid main() {\n\tfloat a = 1.0;\n\tfloat sin_mod = .5;\n\tvec3 col = vec3(0., 1., 1.);\n\n\tfloat bw = sin(sin_mod*uTime+mod(vPos.y+300., 22.0+hash11(uTime*.001)*10.) + cos(sin_mod*uTime+sin(vPos.x)));\n\tfloat val = bw > 0. ? 1. : 0.;\n\tcol = vec3(val);\n\n\n\tgl_FragColor = vec4( col, a);\n}\n"
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports) {
+
+module.exports = "precision highp float;\n\nuniform mat4 projectionMatrix;\nuniform mat4 modelViewMatrix;\n\nattribute vec3 position;\n\nvarying vec3 vPosition;\n\nvoid main() {\n  vPosition = position;\n\n  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1);\n}\n"
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports) {
+
+module.exports = "precision mediump float;\nuniform float uTime;\nvarying vec3  vPosition;\n\n// COMPUTE THE Z FOR A SPHERE OF RADIUS r.\n\nfloat computeZ(vec2 xy, float r) {\n   //float zz = 1.0 - sqrt(xy.x*xy.y + xy.x*xy.y) ;\n   float zz = xy.x / xy.y;\n      return zz;\n}\n\nvoid main() {\n   float x = vPosition.x;\n   float y = vPosition.y;\n   float s = 0.;\n\n   s = (mod(x, 2.0) * 0.1 + mod(y, 2.0+abs(vPosition.y)) * 0.15 + cos(mod(uTime, 10.0+abs(vPosition.z))) + sin(mod(uTime, 9.0))) > 0. ? 1. : 0.;\n\n   gl_FragColor = vec4(vec3(1.)*s, 1.);\n}\n"
+
+/***/ }),
+/* 55 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51459,7 +51495,7 @@ function CanvasRenderer() {
 
 
 /***/ }),
-/* 50 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52128,45 +52164,6 @@ module.exports = function (THREE) {
 
   };
 };
-
-/***/ }),
-/* 51 */,
-/* 52 */,
-/* 53 */,
-/* 54 */
-/***/ (function(module, exports) {
-
-module.exports = "precision highp float;\n\nuniform mat4 projectionMatrix;\nuniform mat4 modelViewMatrix;\n\nattribute vec3 position;\nvarying vec3 vPos;\n\nvoid main() {\n\tvec3 pos = position;\n\tvPos = position;\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );\n}\n"
-
-/***/ }),
-/* 55 */
-/***/ (function(module, exports) {
-
-module.exports = "precision highp float;\n\nuniform vec3 uColor;\nuniform float uTime;\nuniform float uStep;\nuniform bool uInvert;\n\nvarying vec3 vPos;\n\nfloat remap(float old_value, float old_min, float old_max, float new_min, float new_max){\n\tfloat new_value = 0.;\n\n\tnew_value = ((old_value - old_min) / (old_max - old_min)) * (new_max - new_min) + new_min;\n\n\treturn new_value;\n}\n\nvoid main() {\n\tfloat a = 1.0;\n\tfloat sin_mod = 0.01;\n\tvec3 origin = vec3(0, 0, 0);\n\tvec3 col = vec3((vPos.x+1.0)*0.5);\n\tfloat bw = sin(uTime*0.001 * (mod(vPos.y, 1000.)-500.)) > 0. ? 1. : .2;\n\tcol.r = col.g = col.b = bw;\n\n\tfloat dist = distance(origin, vPos);\n\tfloat n_dist = distance(origin, vPos);\n\n\tif(uInvert && mod(vPos.x, 30.) < 25.\n\t\t&& mod(vPos.y, 30.) > 5.\n\t\t&& sin(vPos.y*0.1) > 0.5\n\t\t&& tan(vPos.y*0.001 + vPos.y*0.1 - uTime) < 1.){\n\t\t\tcol.r = col.g = col.b = 1.-col.r;\n\t\t}\n\n\n\tgl_FragColor = vec4( col, a);\n}\n"
-
-/***/ }),
-/* 56 */
-/***/ (function(module, exports) {
-
-module.exports = "precision highp float;\n\nuniform mat4 projectionMatrix;\nuniform mat4 modelViewMatrix;\n\nattribute vec3 position;\nvarying vec3 vPos;\n\nvoid main() {\n\tvec3 pos = position;\n\tvPos = position;\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );\n}\n"
-
-/***/ }),
-/* 57 */
-/***/ (function(module, exports) {
-
-module.exports = "precision highp float;\n\n#define HASHSCALE1 .1031\n\n// noise https://github.com/ashima/webgl-noise/blob/master/src/noise3D.glsl\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v)\n  {\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i);\n  vec4 p = permute( permute( permute(\n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))\n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),\n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n\nfloat hash11(float p) {\n\tvec3 p3  = fract(vec3(p) * HASHSCALE1);\n    p3 += dot(p3, p3.yzx + 19.19);\n    return fract((p3.x + p3.y) * p3.z);\n}\n\nuniform vec3 uColor;\nuniform float uTime;\nuniform float uStep;\nuniform bool uInvert;\n\nvarying vec3 vPos;\n\nvoid main() {\n\tfloat a = 1.0;\n\tfloat sin_mod = .5;\n\tvec3 col = vec3(0., 1., 1.);\n\n\tfloat bw = sin(sin_mod*uTime+mod(vPos.y+300., 22.0+hash11(uTime*.001)*10.) + cos(sin_mod*uTime+sin(vPos.x)));\n\tfloat val = bw > 0. ? 1. : 0.;\n\tcol = vec3(val);\n\n\n\tgl_FragColor = vec4( col, a);\n}\n"
-
-/***/ }),
-/* 58 */
-/***/ (function(module, exports) {
-
-module.exports = "precision highp float;\n\nuniform mat4 projectionMatrix;\nuniform mat4 modelViewMatrix;\n\nattribute vec3 position;\n\nvarying vec3 vPosition;\n\nvoid main() {\n  vPosition = position;\n\n  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1);\n}\n"
-
-/***/ }),
-/* 59 */
-/***/ (function(module, exports) {
-
-module.exports = "precision mediump float;\nuniform float uTime;\nvarying vec3  vPosition;\n\n// COMPUTE THE Z FOR A SPHERE OF RADIUS r.\n\nfloat computeZ(vec2 xy, float r) {\n   //float zz = 1.0 - sqrt(xy.x*xy.y + xy.x*xy.y) ;\n   float zz = xy.x / xy.y;\n      return zz;\n}\n\nvoid main() {\n   float x = vPosition.x;\n   float y = vPosition.y;\n   float s = 0.;\n\n   s = (mod(x, 2.0) * 0.1 + mod(y, 2.0+abs(vPosition.y)) * 0.15 + cos(mod(uTime, 10.0+abs(vPosition.z))) + sin(mod(uTime, 9.0))) > 0. ? 1. : 0.;\n\n   gl_FragColor = vec4(vec3(1.)*s, 1.);\n}\n"
 
 /***/ })
 /******/ ]);

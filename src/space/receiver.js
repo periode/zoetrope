@@ -2,7 +2,7 @@ let exports = module.exports = {};
 //adhoc: 169.254.110.10
 //wifi: 169.225.32.166
 // const SOCKET_SERVER = "169.254.110.10:2046";
-const SOCKET_SERVER = "localhost:2046"
+const SOCKET_SERVER = "169.254.110.10"
 const io = require('socket.io-client');
 let socket
 
